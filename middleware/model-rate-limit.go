@@ -22,6 +22,7 @@ const (
 )
 
 // 检查Redis中的请求限制
+// 注意: key 应该已经通过 common.RedisKey() 添加了前缀
 func checkRedisRateLimit(ctx context.Context, rdb *redis.Client, key string, maxCount int, duration int64) (bool, error) {
 	// 如果maxCount为0，表示不限制
 	if maxCount == 0 {
@@ -82,7 +83,7 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 		rdb := common.RDB
 
 		// 1. 检查成功请求数限制
-		successKey := fmt.Sprintf("rateLimit:%s:%s", ModelRequestRateLimitSuccessCountMark, userId)
+		successKey := common.RedisKey(fmt.Sprintf("rateLimit:%s:%s", ModelRequestRateLimitSuccessCountMark, userId))
 		allowed, err := checkRedisRateLimit(ctx, rdb, successKey, successMaxCount, duration)
 		if err != nil {
 			fmt.Println("检查成功请求数限制失败:", err.Error())
@@ -96,7 +97,7 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 
 		//2.检查总请求数限制并记录总请求（当totalMaxCount为0时会自动跳过，使用令牌桶限流器
 		if totalMaxCount > 0 {
-			totalKey := fmt.Sprintf("rateLimit:%s", userId)
+			totalKey := common.RedisKey(fmt.Sprintf("rateLimit:%s", userId))
 			// 初始化
 			tb := limiter.New(ctx, rdb)
 			allowed, err = tb.Allow(

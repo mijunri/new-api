@@ -20,7 +20,7 @@ const (
 func redisEmailVerificationRateLimiter(c *gin.Context) {
 	ctx := context.Background()
 	rdb := common.RDB
-	key := "emailVerification:" + EmailVerificationRateLimitMark + ":" + c.ClientIP()
+	key := common.RedisKey("emailVerification:" + EmailVerificationRateLimitMark + ":" + c.ClientIP())
 
 	count, err := rdb.Incr(ctx, key).Result()
 	if err != nil {
