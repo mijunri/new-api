@@ -29,3 +29,7 @@ data/
 .gomodcache/
 .gocache-temp
 .gopath
+
+# Skills 凭证文件（不入库）
+.claude/skills/remote_server/password
+.claude/skills/frontend_deploy/credentials

@@ -52,7 +52,7 @@ func (rl *RedisLimiter) Allow(ctx context.Context, key string, opts ...Option) (
 		opt(config)
 	}
 
-	// 执行限流
+	// 执行限流 - key 应该已经在调用方添加了前缀
 	result, err := rl.client.EvalSha(
 		ctx,
 		rl.limitScriptSHA,

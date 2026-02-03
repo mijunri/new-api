@@ -151,13 +151,20 @@ func main() {
 	middleware.SetUpLogger(server)
 	// Initialize session store
 	store := cookie.NewStore([]byte(common.SessionSecret))
-	store.Options(sessions.Options{
+	sessionOpts := sessions.Options{
 		Path:     "/",
 		MaxAge:   2592000, // 30 days
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
-	})
+		SameSite: http.SameSiteLaxMode, // Lax 允许跨子域 AJAX 请求携带 cookie
+	}
+	// 如果设置了 SESSION_DOMAIN，则配置 cookie domain 以支持跨子域共享
+	// 例如设置为 ".foxrouter.com" 可以让 foxrouter.com 和 test-api.foxrouter.com 共享 session
+	if sessionDomain := os.Getenv("SESSION_DOMAIN"); sessionDomain != "" {
+		sessionOpts.Domain = sessionDomain
+		common.SysLog("Session cookie domain: " + sessionDomain)
+	}
+	store.Options(sessionOpts)
 	server.Use(sessions.Sessions("session", store))
 
 	InjectUmamiAnalytics()
