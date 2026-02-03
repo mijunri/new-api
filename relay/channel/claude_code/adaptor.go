@@ -69,21 +69,6 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Header, info *rel
 	}
 	req.Set("anthropic-version", anthropicVersion)
 
-	// Set anthropic-beta header with oauth flag and interleaved-thinking
-	anthropicBeta := c.Request.Header.Get("anthropic-beta")
-	requiredBetas := []string{"oauth-2025-04-20", "interleaved-thinking-2025-05-14"}
-	if anthropicBeta != "" {
-		// Add required betas if not already included
-		for _, beta := range requiredBetas {
-			if !strings.Contains(anthropicBeta, beta) {
-				anthropicBeta = beta + "," + anthropicBeta
-			}
-		}
-	} else {
-		anthropicBeta = strings.Join(requiredBetas, ",")
-	}
-	req.Set("anthropic-beta", anthropicBeta)
-
 	// Set x-app header - CRITICAL for Claude Code OAuth
 	xApp := c.Request.Header.Get("x-app")
 	if xApp == "" {
@@ -102,8 +87,19 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Header, info *rel
 		req.Set("Accept", "application/json")
 	}
 
-	// Apply Claude-specific headers from model settings
-	claude.CommonClaudeHeadersOperation(c, req, info)
+	// Set anthropic-beta header with oauth flag - MUST be after any other header operations
+	// oauth-2025-04-20 is REQUIRED for Claude Code OAuth authentication
+	anthropicBeta := c.Request.Header.Get("anthropic-beta")
+	oauthBeta := "oauth-2025-04-20"
+	if anthropicBeta != "" {
+		// Add oauth beta if not already included
+		if !strings.Contains(anthropicBeta, oauthBeta) {
+			anthropicBeta = oauthBeta + "," + anthropicBeta
+		}
+	} else {
+		anthropicBeta = oauthBeta
+	}
+	req.Set("anthropic-beta", anthropicBeta)
 
 	return nil
 }
