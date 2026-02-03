@@ -135,6 +135,9 @@ func main() {
 
 	// Initialize HTTP server
 	server := gin.New()
+	// 禁用尾部斜杠重定向，避免 307 重定向导致 CORS 问题
+	// 例如 DELETE /api/channel/1/ 会被重定向到 /api/channel/1，但重定向响应没有 CORS 头
+	server.RedirectTrailingSlash = false
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
 		common.SysLog(fmt.Sprintf("panic detected: %v", err))
 		c.JSON(http.StatusInternalServerError, gin.H{

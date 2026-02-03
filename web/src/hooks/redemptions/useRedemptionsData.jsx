@@ -129,7 +129,7 @@ export const useRedemptionsData = () => {
     try {
       switch (action) {
         case REDEMPTION_ACTIONS.DELETE:
-          res = await API.delete(`/api/redemption/${id}/`);
+          res = await API.delete(`/api/redemption/${id}`);
           break;
         case REDEMPTION_ACTIONS.ENABLE:
           data.status = REDEMPTION_STATUS.UNUSED;

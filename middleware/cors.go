@@ -24,6 +24,7 @@ func CORS() gin.HandlerFunc {
 		"X-Requested-With",
 		"New-API-User", // 前端自定义头
 		"X-New-Api-Version",
+		"Priority", // Chrome 浏览器的优先级提示头
 	}
 	// 暴露响应头给前端
 	config.ExposeHeaders = []string{

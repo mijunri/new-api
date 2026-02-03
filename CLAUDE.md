@@ -29,6 +29,26 @@
 2. 用清晰的命令模板描述流程（先用占位符，连接/鉴权细节可后补）
 3. 尽量做到：**可复用、可审计、可回滚**
 
+---
+
+## 部署约定
+
+### 后端部署
+
+- **部署方式**：SSH 到测试服务器，拉取代码、编译、重启 systemd 服务
+- **部署脚本**：`.claude/skills/remote_server/deploy_test_env.sh`
+- **凭证文件**：`.claude/skills/remote_server/password`（不入库）
+- **如果缺少凭证**：向用户索取 SSH 密码
+
+### 前端部署
+
+- **部署方式**：构建后上传到阿里云 OSS，通过 CDN 分发
+- **部署脚本**：`.claude/skills/frontend_deploy/deploy.sh`
+- **凭证文件**：`.claude/skills/frontend_deploy/credentials`（不入库）
+- **如果缺少凭证**：向用户索取阿里云 ACCESS_KEY_ID 和 ACCESS_KEY_SECRET
+
+> ⚠️ **重要**：前端不是部署到服务器，而是上传到 OSS！
+
 ### 输出规范（重要）
 
 - **默认中文输出**：对用户的说明、结论、操作步骤、风险提示一律使用中文。
