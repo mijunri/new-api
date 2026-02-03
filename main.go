@@ -25,6 +25,7 @@ import (
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	sessionsredis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -153,7 +154,7 @@ func main() {
 	server.Use(middleware.PoweredBy())
 	middleware.SetUpLogger(server)
 	// Initialize session store
-	store := cookie.NewStore([]byte(common.SessionSecret))
+	var sessionStore sessions.Store
 	sessionOpts := sessions.Options{
 		Path:     "/",
 		MaxAge:   2592000, // 30 days
@@ -167,8 +168,36 @@ func main() {
 		sessionOpts.Domain = sessionDomain
 		common.SysLog("Session cookie domain: " + sessionDomain)
 	}
-	store.Options(sessionOpts)
-	server.Use(sessions.Sessions("session", store))
+
+	// 如果 Redis 启用，使用 Redis 存储 session（支持多实例部署）
+	// 否则使用 Cookie 存储
+	if common.RedisEnabled {
+		redisOpt := common.ParseRedisOption()
+		redisStore, err := sessionsredis.NewStoreWithDB(
+			10,                      // max idle connections
+			"tcp",                   // network
+			redisOpt.Addr,           // address
+			redisOpt.Password,       // password
+			strconv.Itoa(redisOpt.DB), // DB
+			[]byte(common.SessionSecret),
+		)
+		if err != nil {
+			common.FatalLog("failed to create Redis session store: " + err.Error())
+		}
+		// 设置 key 前缀，避免多实例冲突
+		if common.RedisKeyPrefix != "" {
+			sessionsredis.SetKeyPrefix(redisStore, common.RedisKeyPrefix+":session:")
+		}
+		redisStore.Options(sessionOpts)
+		sessionStore = redisStore
+		common.SysLog("Session store: Redis")
+	} else {
+		cookieStore := cookie.NewStore([]byte(common.SessionSecret))
+		cookieStore.Options(sessionOpts)
+		sessionStore = cookieStore
+		common.SysLog("Session store: Cookie")
+	}
+	server.Use(sessions.Sessions("session", sessionStore))
 
 	InjectUmamiAnalytics()
 	InjectGoogleAnalytics()
