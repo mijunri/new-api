@@ -243,9 +243,9 @@ func SetApiRouter(router *gin.Engine) {
 		prefillGroupRoute := apiRouter.Group("/prefill_group")
 		prefillGroupRoute.Use(middleware.AdminAuth())
 		{
-			prefillGroupRoute.GET("/", controller.GetPrefillGroups)
-			prefillGroupRoute.POST("/", controller.CreatePrefillGroup)
-			prefillGroupRoute.PUT("/", controller.UpdatePrefillGroup)
+			prefillGroupRoute.GET("", controller.GetPrefillGroups)
+			prefillGroupRoute.POST("", controller.CreatePrefillGroup)
+			prefillGroupRoute.PUT("", controller.UpdatePrefillGroup)
 			prefillGroupRoute.DELETE("/:id", controller.DeletePrefillGroup)
 		}
 
