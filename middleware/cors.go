@@ -9,8 +9,28 @@ import (
 func CORS() gin.HandlerFunc {
 	config := cors.DefaultConfig()
 	config.AllowCredentials = true
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
-	config.AllowHeaders = []string{"*"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}
+	// 必须明确列出所有允许的请求头，通配符 "*" 在某些库版本中不生效
+	config.AllowHeaders = []string{
+		"Origin",
+		"Content-Type",
+		"Content-Length",
+		"Accept",
+		"Accept-Encoding",
+		"Accept-Language",
+		"Authorization",
+		"Cache-Control",
+		"Pragma",
+		"X-Requested-With",
+		"New-API-User", // 前端自定义头
+		"X-New-Api-Version",
+	}
+	// 暴露响应头给前端
+	config.ExposeHeaders = []string{
+		"Content-Length",
+		"Content-Type",
+		"X-New-Api-Version",
+	}
 	// AllowAllOrigins 和 AllowCredentials 不能同时为 true
 	// 使用 AllowOriginFunc 动态允许所有来源
 	config.AllowOriginFunc = func(origin string) bool {
