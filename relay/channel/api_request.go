@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -23,6 +24,79 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
+
+// logRequestDetails 记录请求详情
+func logRequestDetails(c *gin.Context, req *http.Request, bodyBytes []byte, info *common.RelayInfo) {
+	// 记录请求头（隐藏敏感信息）
+	var headerStrBuilder strings.Builder
+	for key, values := range req.Header {
+		for _, value := range values {
+			// 隐藏敏感的 Authorization header
+			if strings.EqualFold(key, "Authorization") || strings.EqualFold(key, "x-api-key") {
+				if len(value) > 20 {
+					value = value[:10] + "***" + value[len(value)-5:]
+				} else {
+					value = "***masked***"
+				}
+			}
+			headerStrBuilder.WriteString(fmt.Sprintf("%s: %s\n", key, value))
+		}
+	}
+	logger.LogInfo(c, fmt.Sprintf("[RELAY REQUEST] Channel: %d (%s) Model: %s\n[RELAY REQUEST] Headers:\n%s",
+		info.ChannelId, getChannelTypeName(info.ChannelType), info.UpstreamModelName, headerStrBuilder.String()))
+
+	// 记录请求体（截断过长的内容）
+	if len(bodyBytes) > 0 {
+		bodyStr := string(bodyBytes)
+		if len(bodyStr) > 2000 {
+			bodyStr = bodyStr[:2000] + "...[truncated]"
+		}
+		logger.LogInfo(c, fmt.Sprintf("[RELAY REQUEST] Body: %s", bodyStr))
+	}
+}
+
+// logResponseDetails 记录响应详情
+func logResponseDetails(c *gin.Context, resp *http.Response, info *common.RelayInfo) {
+	logger.LogInfo(c, fmt.Sprintf("[RELAY RESPONSE] Status: %d %s", resp.StatusCode, resp.Status))
+
+	// 记录响应头
+	var headerStrBuilder strings.Builder
+	for key, values := range resp.Header {
+		for _, value := range values {
+			headerStrBuilder.WriteString(fmt.Sprintf("%s: %s\n", key, value))
+		}
+	}
+	logger.LogInfo(c, fmt.Sprintf("[RELAY RESPONSE] Headers:\n%s", headerStrBuilder.String()))
+
+	// 对于非流式请求，尝试记录响应体
+	if !info.IsStream && resp.Body != nil && resp.StatusCode >= 400 {
+		// 只记录错误响应的 body，成功响应可能太大
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err == nil {
+			// 重新设置响应体以便后续处理
+			resp.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+			bodyStr := string(bodyBytes)
+			if len(bodyStr) > 2000 {
+				bodyStr = bodyStr[:2000] + "...[truncated]"
+			}
+			logger.LogInfo(c, fmt.Sprintf("[RELAY RESPONSE] Error Body: %s", bodyStr))
+		}
+	}
+}
+
+// getChannelTypeName 获取渠道类型名称
+func getChannelTypeName(channelType int) string {
+	// 简单的渠道类型映射
+	names := map[int]string{
+		1:  "OpenAI",
+		14: "Claude",
+		58: "Claude Code",
+	}
+	if name, ok := names[channelType]; ok {
+		return name
+	}
+	return fmt.Sprintf("Type-%d", channelType)
+}
 
 func SetupApiRequestHeader(info *common.RelayInfo, c *gin.Context, req *http.Header) {
 	if info.RelayMode == constant.RelayModeAudioTranscription || info.RelayMode == constant.RelayModeAudioTranslation {
@@ -116,9 +190,21 @@ func DoApiRequest(a Adaptor, c *gin.Context, info *common.RelayInfo, requestBody
 	if err != nil {
 		return nil, fmt.Errorf("get request url failed: %w", err)
 	}
-	if common2.DebugEnabled {
-		println("fullRequestURL:", fullRequestURL)
+
+	// 读取请求体用于日志记录
+	var bodyBytes []byte
+	if requestBody != nil && common2.DebugEnabled {
+		bodyBytes, err = io.ReadAll(requestBody)
+		if err != nil {
+			return nil, fmt.Errorf("read request body failed: %w", err)
+		}
+		requestBody = strings.NewReader(string(bodyBytes))
 	}
+
+	if common2.DebugEnabled {
+		logger.LogInfo(c, fmt.Sprintf("[RELAY REQUEST] URL: %s %s", c.Request.Method, fullRequestURL))
+	}
+
 	req, err := http.NewRequest(c.Request.Method, fullRequestURL, requestBody)
 	if err != nil {
 		return nil, fmt.Errorf("new request failed: %w", err)
@@ -135,10 +221,22 @@ func DoApiRequest(a Adaptor, c *gin.Context, info *common.RelayInfo, requestBody
 		return nil, err
 	}
 	applyHeaderOverrideToRequest(req, headerOverride)
+
+	// 记录请求详情（DEBUG模式）
+	if common2.DebugEnabled {
+		logRequestDetails(c, req, bodyBytes, info)
+	}
+
 	resp, err := doRequest(c, req, info)
 	if err != nil {
 		return nil, fmt.Errorf("do request failed: %w", err)
 	}
+
+	// 记录响应详情（DEBUG模式）
+	if common2.DebugEnabled && resp != nil {
+		logResponseDetails(c, resp, info)
+	}
+
 	return resp, nil
 }
 
