@@ -69,26 +69,41 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Header, info *rel
 	}
 	req.Set("anthropic-version", anthropicVersion)
 
-	// Set anthropic-beta header with oauth flag
+	// Set anthropic-beta header with oauth flag and interleaved-thinking
 	anthropicBeta := c.Request.Header.Get("anthropic-beta")
-	oauthBeta := "oauth-2025-04-20"
+	requiredBetas := []string{"oauth-2025-04-20", "interleaved-thinking-2025-05-14"}
 	if anthropicBeta != "" {
-		// Check if oauth beta is already included
-		if !strings.Contains(anthropicBeta, oauthBeta) {
-			anthropicBeta = oauthBeta + "," + anthropicBeta
+		// Add required betas if not already included
+		for _, beta := range requiredBetas {
+			if !strings.Contains(anthropicBeta, beta) {
+				anthropicBeta = beta + "," + anthropicBeta
+			}
 		}
 	} else {
-		anthropicBeta = oauthBeta
+		anthropicBeta = strings.Join(requiredBetas, ",")
 	}
 	req.Set("anthropic-beta", anthropicBeta)
 
+	// Set x-app header - CRITICAL for Claude Code OAuth
+	xApp := c.Request.Header.Get("x-app")
+	if xApp == "" {
+		xApp = "cli"
+	}
+	req.Set("x-app", xApp)
+
+	// Set User-Agent to mimic Claude CLI client
+	userAgent := c.Request.Header.Get("User-Agent")
+	if userAgent == "" || !strings.Contains(userAgent, "claude") {
+		req.Set("User-Agent", "claude-cli/2.1.6 (external, cli)")
+	}
+
+	// Set Accept header
+	if req.Get("Accept") == "" {
+		req.Set("Accept", "application/json")
+	}
+
 	// Apply Claude-specific headers from model settings
 	claude.CommonClaudeHeadersOperation(c, req, info)
-
-	// Optional: Set User-Agent for Claude Code compatibility
-	if req.Get("User-Agent") == "" {
-		req.Set("User-Agent", "claude-code-proxy/1.0")
-	}
 
 	return nil
 }
