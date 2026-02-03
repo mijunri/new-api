@@ -45,11 +45,16 @@ func (a *Adaptor) ConvertImageRequest(c *gin.Context, info *relaycommon.RelayInf
 }
 
 func (a *Adaptor) Init(info *relaycommon.RelayInfo) {
-	if strings.HasPrefix(info.UpstreamModelName, "claude-2") || strings.HasPrefix(info.UpstreamModelName, "claude-instant") {
-		a.RequestMode = RequestModeCompletion
-	} else {
-		a.RequestMode = RequestModeMessage
-	}
+	// 注意：Anthropic 官方已于 2024 年废弃了旧版 Completion API (/v1/complete)
+	// 现在所有模型都应使用 Messages API (/v1/messages)
+	// 旧模型 claude-2.x 和 claude-instant 如果仍需支持，也应通过 Messages API 调用
+	// 如果第三方服务仍支持旧版 API，可将以下代码取消注释：
+	// if strings.HasPrefix(info.UpstreamModelName, "claude-2") || strings.HasPrefix(info.UpstreamModelName, "claude-instant") {
+	// 	a.RequestMode = RequestModeCompletion
+	// } else {
+	// 	a.RequestMode = RequestModeMessage
+	// }
+	a.RequestMode = RequestModeMessage
 }
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
