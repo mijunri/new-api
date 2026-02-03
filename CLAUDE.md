@@ -45,12 +45,15 @@
 
 ### 前端部署
 
-- **部署方式**：构建后上传到阿里云 OSS，通过 CDN 分发
+- **部署方式**：**本地打包** dist 文件后上传到阿里云 OSS，通过 CDN 分发
 - **部署脚本**：`.claude/skills/frontend_deploy/deploy.sh`
 - **凭证文件**：`.claude/skills/frontend_deploy/credentials`（不入库）
 - **如果缺少凭证**：向用户索取阿里云 ACCESS_KEY_ID 和 ACCESS_KEY_SECRET
 
-> ⚠️ **重要**：前端不是部署到服务器，而是上传到 OSS！
+> ⚠️ **重要**：
+> - 前端不是部署到服务器，而是上传到 OSS！
+> - **禁止在服务器上执行 `npm run build`**，服务器内存不足会导致 OOM 崩溃
+> - 正确流程：本地/CI 构建 → 上传 dist 到 OSS → CDN 自动分发
 
 ### 输出规范（重要）
 

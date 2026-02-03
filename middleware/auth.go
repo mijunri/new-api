@@ -31,6 +31,12 @@ func validUserInfo(username string, role int) bool {
 }
 
 func authHelper(c *gin.Context, minRole int) {
+	// 处理 OPTIONS 预检请求，直接放行（CORS 中间件会处理响应头）
+	if c.Request.Method == "OPTIONS" {
+		c.Next()
+		return
+	}
+
 	session := sessions.Default(c)
 	username := session.Get("username")
 	role := session.Get("role")
