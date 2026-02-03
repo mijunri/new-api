@@ -33,12 +33,15 @@
 
 ## 部署约定
 
+> ⚠️ **重要**：每次代码修改提交到仓库后，都需要重新部署才能生效！提交代码 ≠ 部署上线。
+
 ### 后端部署
 
 - **部署方式**：SSH 到测试服务器，拉取代码、编译、重启 systemd 服务
 - **部署脚本**：`.claude/skills/remote_server/deploy_test_env.sh`
 - **凭证文件**：`.claude/skills/remote_server/password`（不入库）
 - **如果缺少凭证**：向用户索取 SSH 密码
+- **启动方式**：使用 `START_METHOD="build+systemd"` 编译后端并重启服务
 
 ### 前端部署
 
