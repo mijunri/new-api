@@ -279,6 +279,7 @@ var streamSupportedChannels = map[int]bool{
 	constant.ChannelTypeAli:        true,
 	constant.ChannelTypeSubmodel:   true,
 	constant.ChannelTypeCodex:      true,
+	constant.ChannelTypeClaudeCode: true,
 }
 
 func GenRelayInfoWs(c *gin.Context, ws *websocket.Conn) *RelayInfo {
