@@ -156,7 +156,7 @@ func main() {
 		MaxAge:   2592000, // 30 days
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode, // Lax 允许跨子域 AJAX 请求携带 cookie
 	})
 	server.Use(sessions.Sessions("session", store))
 
