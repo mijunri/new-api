@@ -7,7 +7,9 @@ upload
 build
 *.db-journal
 logs
-web/dist
+# Ignore frontend build output but keep placeholder
+web/dist/*
+!web/dist/index.html
 .env
 one-api
 new-api
