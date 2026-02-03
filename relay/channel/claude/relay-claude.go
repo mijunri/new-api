@@ -157,7 +157,10 @@ func RequestOpenAI2ClaudeMessage(c *gin.Context, textRequest dto.GeneralOpenAIRe
 		TopP:          textRequest.TopP,
 		TopK:          textRequest.TopK,
 		Stream:        textRequest.Stream,
-		Tools:         claudeTools,
+	}
+	// 只有当 tools 非空时才设置，避免发送空数组
+	if len(claudeTools) > 0 {
+		claudeRequest.Tools = claudeTools
 	}
 
 	// 处理 tool_choice 和 parallel_tool_calls
