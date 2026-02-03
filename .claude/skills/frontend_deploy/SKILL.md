@@ -4,6 +4,27 @@
 
 将前端构建产物部署到阿里云 OSS，配合 CDN 加速分发。
 
+> ⚠️ **重要**：前端部署是上传到 OSS，**不是**直接传到服务器！
+
+---
+
+### 凭证检查（执行前必读）
+
+在执行部署前，**必须先检查凭证文件是否存在**：
+
+```bash
+ls -la .claude/skills/frontend_deploy/credentials
+```
+
+- **如果文件存在**：可以直接执行部署
+- **如果文件不存在**：必须向用户索取阿里云 ACCESS_KEY_ID 和 ACCESS_KEY_SECRET，然后创建凭证文件
+
+**向用户索取凭证的示例话术**：
+
+> 前端部署需要阿里云 OSS 凭证，请提供：
+> - ACCESS_KEY_ID
+> - ACCESS_KEY_SECRET
+
 ---
 
 ### 部署目标
