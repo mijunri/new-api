@@ -44,11 +44,6 @@ export const useNavigation = (t, docsLink, headerNavModules) => {
         itemKey: 'console',
         to: '/console',
       },
-      {
-        text: t('模型广场'),
-        itemKey: 'pricing',
-        to: '/pricing',
-      },
       ...(docsLink
         ? [
             {
