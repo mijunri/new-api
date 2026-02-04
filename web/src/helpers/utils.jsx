@@ -47,15 +47,13 @@ export function isRoot() {
 }
 
 export function getSystemName() {
-  let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'New API';
-  return system_name;
+  // 强制使用 FoxRouter 品牌名称
+  return 'FoxRouter';
 }
 
 export function getLogo() {
-  let logo = localStorage.getItem('logo');
-  if (!logo) return '/logo.png';
-  return logo;
+  // 强制使用 FoxRouter logo
+  return '/logo.png';
 }
 
 export function getUserIdFromLocalStorage() {
