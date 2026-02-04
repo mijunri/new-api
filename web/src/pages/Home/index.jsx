@@ -33,7 +33,6 @@ import { useActualTheme } from '../../context/Theme';
 import { marked } from 'marked';
 import { useTranslation } from 'react-i18next';
 import {
-  IconGithubLogo,
   IconPlay,
   IconFile,
   IconCopy,
@@ -73,7 +72,6 @@ const Home = () => {
   const [homePageContent, setHomePageContent] = useState('');
   const [noticeVisible, setNoticeVisible] = useState(false);
   const isMobile = useIsMobile();
-  const isDemoSiteMode = statusState?.status?.demo_site_enabled || false;
   const docsLink = statusState?.status?.docs_link || '';
   const serverAddress =
     statusState?.status?.server_address || `${window.location.origin}`;
@@ -224,31 +222,15 @@ const Home = () => {
                       {t('获取密钥')}
                     </Button>
                   </Link>
-                  {isDemoSiteMode && statusState?.status?.version ? (
+                  {docsLink && (
                     <Button
                       size={isMobile ? 'default' : 'large'}
                       className='flex items-center !rounded-3xl px-6 py-2'
-                      icon={<IconGithubLogo />}
-                      onClick={() =>
-                        window.open(
-                          'https://github.com/QuantumNous/new-api',
-                          '_blank',
-                        )
-                      }
+                      icon={<IconFile />}
+                      onClick={() => window.open(docsLink, '_blank')}
                     >
-                      {statusState.status.version}
+                      {t('文档')}
                     </Button>
-                  ) : (
-                    docsLink && (
-                      <Button
-                        size={isMobile ? 'default' : 'large'}
-                        className='flex items-center !rounded-3xl px-6 py-2'
-                        icon={<IconFile />}
-                        onClick={() => window.open(docsLink, '_blank')}
-                      >
-                        {t('文档')}
-                      </Button>
-                    )
                   )}
                 </div>
 
