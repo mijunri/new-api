@@ -296,10 +296,6 @@ const Home = () => {
               </div>
             </section>
 
-            {/* 底部信息 */}
-            <footer className='claude-footer'>
-              <p>© 2025 FoxRouter. All rights reserved.</p>
-            </footer>
           </div>
         </div>
       ) : (
