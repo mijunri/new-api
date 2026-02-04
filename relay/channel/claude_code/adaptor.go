@@ -60,46 +60,63 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Header, info *rel
 	channel.SetupApiRequestHeader(info, c, req)
 
 	// Use Bearer Token authentication for Claude Code (OAuth)
+	// Authorization uses channel's API Key, not client's token
 	req.Set("Authorization", "Bearer "+info.ApiKey)
 
-	// Set anthropic-version
-	anthropicVersion := c.Request.Header.Get("anthropic-version")
-	if anthropicVersion == "" {
-		anthropicVersion = "2023-06-01"
+	// Pass through Claude Code related headers from client
+	// These headers are critical for Claude Code OAuth and vary by model/behavior
+	claudeCodeHeaders := []string{
+		"anthropic-version",
+		"anthropic-beta",
+		"x-app",
+		"x-client-id",
+		"x-session-id",
+		"x-request-id",
+		"x-trace-id",
+		"x-device-id",
+		"x-client-version",
+		"x-platform",
+		"x-os",
+		"x-os-version",
 	}
-	req.Set("anthropic-version", anthropicVersion)
 
-	// Set x-app header - CRITICAL for Claude Code OAuth
-	xApp := c.Request.Header.Get("x-app")
-	if xApp == "" {
-		xApp = "cli"
+	for _, headerName := range claudeCodeHeaders {
+		if headerValue := c.Request.Header.Get(headerName); headerValue != "" {
+			req.Set(headerName, headerValue)
+		}
 	}
-	req.Set("x-app", xApp)
 
-	// Set User-Agent to mimic Claude CLI client
+	// Set User-Agent: pass through if client provides one, otherwise use default
 	userAgent := c.Request.Header.Get("User-Agent")
-	if userAgent == "" || !strings.Contains(userAgent, "claude") {
+	if userAgent != "" {
+		req.Set("User-Agent", userAgent)
+	} else {
 		req.Set("User-Agent", "claude-cli/2.1.6 (external, cli)")
 	}
 
-	// Set Accept header
+	// Set default values only if client didn't provide them
+	if req.Get("anthropic-version") == "" {
+		req.Set("anthropic-version", "2023-06-01")
+	}
+
+	if req.Get("x-app") == "" {
+		req.Set("x-app", "cli")
+	}
+
+	// Ensure oauth beta flag is present in anthropic-beta header
+	// This is REQUIRED for Claude Code OAuth authentication
+	anthropicBeta := req.Get("anthropic-beta")
+	oauthBeta := "oauth-2025-04-20"
+	if anthropicBeta == "" {
+		req.Set("anthropic-beta", oauthBeta)
+	} else if !strings.Contains(anthropicBeta, oauthBeta) {
+		req.Set("anthropic-beta", oauthBeta+","+anthropicBeta)
+	}
+
+	// Set Accept header if not already set
 	if req.Get("Accept") == "" {
 		req.Set("Accept", "application/json")
 	}
-
-	// Set anthropic-beta header with oauth flag - MUST be after any other header operations
-	// oauth-2025-04-20 is REQUIRED for Claude Code OAuth authentication
-	anthropicBeta := c.Request.Header.Get("anthropic-beta")
-	oauthBeta := "oauth-2025-04-20"
-	if anthropicBeta != "" {
-		// Add oauth beta if not already included
-		if !strings.Contains(anthropicBeta, oauthBeta) {
-			anthropicBeta = oauthBeta + "," + anthropicBeta
-		}
-	} else {
-		anthropicBeta = oauthBeta
-	}
-	req.Set("anthropic-beta", anthropicBeta)
 
 	return nil
 }
