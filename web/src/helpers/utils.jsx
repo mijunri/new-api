@@ -47,9 +47,8 @@ export function isRoot() {
 }
 
 export function getSystemName() {
-  let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'FoxRouter';
-  return system_name;
+  // 强制使用 FoxRouter 品牌名称
+  return 'FoxRouter';
 }
 
 export function getLogo() {
