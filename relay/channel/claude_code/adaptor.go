@@ -17,7 +17,6 @@ import (
 )
 
 type Adaptor struct {
-	RequestMode int
 }
 
 func (a *Adaptor) ConvertGeminiRequest(*gin.Context, *relaycommon.RelayInfo, *dto.GeminiChatRequest) (any, error) {
@@ -37,20 +36,10 @@ func (a *Adaptor) ConvertImageRequest(c *gin.Context, info *relaycommon.RelayInf
 }
 
 func (a *Adaptor) Init(info *relaycommon.RelayInfo) {
-	if strings.HasPrefix(info.UpstreamModelName, "claude-2") || strings.HasPrefix(info.UpstreamModelName, "claude-instant") {
-		a.RequestMode = claude.RequestModeCompletion
-	} else {
-		a.RequestMode = claude.RequestModeMessage
-	}
 }
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
-	baseURL := ""
-	if a.RequestMode == claude.RequestModeMessage {
-		baseURL = fmt.Sprintf("%s/v1/messages", info.ChannelBaseUrl)
-	} else {
-		baseURL = fmt.Sprintf("%s/v1/complete", info.ChannelBaseUrl)
-	}
+	baseURL := fmt.Sprintf("%s/v1/messages", info.ChannelBaseUrl)
 	// Claude Code OAuth always uses beta=true
 	baseURL = baseURL + "?beta=true"
 	return baseURL, nil
@@ -125,11 +114,7 @@ func (a *Adaptor) ConvertOpenAIRequest(c *gin.Context, info *relaycommon.RelayIn
 	if request == nil {
 		return nil, errors.New("request is nil")
 	}
-	if a.RequestMode == claude.RequestModeCompletion {
-		return claude.RequestOpenAI2ClaudeComplete(*request), nil
-	} else {
-		return claude.RequestOpenAI2ClaudeMessage(c, *request)
-	}
+	return claude.RequestOpenAI2ClaudeMessage(c, *request)
 }
 
 func (a *Adaptor) ConvertRerankRequest(c *gin.Context, relayMode int, request dto.RerankRequest) (any, error) {
@@ -150,9 +135,9 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 
 func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError) {
 	if info.IsStream {
-		return claude.ClaudeStreamHandler(c, resp, info, a.RequestMode)
+		return claude.ClaudeStreamHandler(c, resp, info)
 	} else {
-		return claude.ClaudeHandler(c, resp, info, a.RequestMode)
+		return claude.ClaudeHandler(c, resp, info)
 	}
 }
 

@@ -7,6 +7,9 @@ upload
 build
 *.db-journal
 logs
+log/
+log/*
+.claude
 # Ignore frontend build output but keep placeholder
 web/dist/*
 !web/dist/index.html
