@@ -74,6 +74,7 @@ import {
   CircleUser,
   Package,
   Server,
+  CalendarClock,
 } from 'lucide-react';
 
 // 获取侧边栏Lucide图标组件
@@ -117,6 +118,8 @@ export function getLucideIcon(key, selected = false) {
       return <Package {...commonProps} color={iconColor} />;
     case 'deployment':
       return <Server {...commonProps} color={iconColor} />;
+    case 'subscription':
+      return <CalendarClock {...commonProps} color={iconColor} />;
     case 'setting':
       return <Settings {...commonProps} color={iconColor} />;
     default:
@@ -569,7 +572,6 @@ export const modelColorMap = {
   'claude-3-opus-20240229': 'rgb(255,132,31)', // 橙红色
   'claude-3-sonnet-20240229': 'rgb(253,135,93)', // 橙色
   'claude-3-haiku-20240307': 'rgb(255,175,146)', // 浅橙色
-  'claude-2.1': 'rgb(255,209,190)', // 浅橙色（略有区别）
 };
 
 export function modelToColor(modelName) {
@@ -601,34 +603,6 @@ export function stringToColor(str) {
   }
   let i = sum % colors.length;
   return colors[i];
-}
-
-// High-contrast color palette for group tags (avoids similar blue/teal shades)
-const groupColors = [
-  'red',
-  'orange',
-  'yellow',
-  'lime',
-  'green',
-  'cyan',
-  'blue',
-  'indigo',
-  'violet',
-  'purple',
-  'pink',
-  'amber',
-  'grey',
-];
-
-export function groupToColor(str) {
-  // Use a better hash algorithm for more even distribution
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash = hash & hash;
-  }
-  hash = Math.abs(hash);
-  return groupColors[hash % groupColors.length];
 }
 
 // 渲染带有模型图标的标签
@@ -699,7 +673,7 @@ export function renderGroup(group) {
     <span key={group}>
       {groups.map((group) => (
         <Tag
-          color={tagColors[group] || groupToColor(group)}
+          color={tagColors[group] || stringToColor(group)}
           key={group}
           shape='circle'
           onClick={async (event) => {
