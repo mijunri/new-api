@@ -141,9 +141,17 @@ func main() {
 
 	// Initialize HTTP server
 	server := gin.New()
-	// 禁用尾部斜杠重定向，避免 307 重定向导致 CORS 问题
-	// 例如 DELETE /api/channel/1/ 会被重定向到 /api/channel/1，但重定向响应没有 CORS 头
-	server.RedirectTrailingSlash = false
+	// 启用尾部斜杠自动重定向
+	// GET /api/log/self/ 会自动重定向到 /api/log/self (301 Moved Permanently)
+	// axios 和浏览器会自动跟随重定向
+	server.RedirectTrailingSlash = true
+	// 添加 CORS 中间件（重定向响应也会带 CORS 头）
+	server.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Next()
+	})
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
 		common.SysLog(fmt.Sprintf("panic detected: %v", err))
 		c.JSON(http.StatusInternalServerError, gin.H{
