@@ -141,11 +141,9 @@ func main() {
 
 	// Initialize HTTP server
 	server := gin.New()
-	// 启用尾部斜杠自动重定向
-	// GET /api/log/self/ 会自动重定向到 /api/log/self (301 Moved Permanently)
-	// axios 和浏览器会自动跟随重定向
-	server.RedirectTrailingSlash = true
-	// 添加 CORS 中间件（重定向响应也会带 CORS 头）
+	// 禁用尾部斜杠重定向（在 web-router.go 中通过 NoRoute 处理）
+	server.RedirectTrailingSlash = false
+	// 添加 CORS 中间件
 	server.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
