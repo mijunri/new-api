@@ -104,11 +104,9 @@ const Home = () => {
     statusState?.status?.server_address || `${window.location.origin}`;
 
   const typewriterTexts = [
-    'claude-3-5-sonnet',
-    'claude-3-5-haiku', 
-    'claude-3-opus',
-    'claude-sonnet-4',
-    'claude-opus-4',
+    'GPT-5.3-Codex',
+    'Claude Opus 4.6',
+    'Gemini 3 Pro',
   ];
 
   const displayHomePageContent = async () => {
