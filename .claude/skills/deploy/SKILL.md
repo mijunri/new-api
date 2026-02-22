@@ -13,7 +13,9 @@ allowed-tools: Read, Grep, Glob, Run
 - **1️⃣ 构建**：前端 + 后端，进度在 Actions 页可见
 - **2️⃣ 部署**：构建成功后自动 SCP 上传并重启服务
 
-### 首次配置（GitHub 仓库 Secrets）
+### 首次配置（GitHub prod 环境 Secrets）
+
+在 **Settings → Environments → prod** 下配置：
 
 | Secret | 值 |
 |--------|-----|

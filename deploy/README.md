@@ -19,7 +19,7 @@
 - **1️⃣ 构建** → **2️⃣ 部署**，分步执行可查看进度
 - 构建成功后才自动部署
 
-**首次需配置 Secrets**：`DEPLOY_HOST`、`DEPLOY_USER`、`DEPLOY_PASSWORD`（见 `.github/workflows/build-and-deploy.yml`）
+**首次需在 prod 环境配置 Secrets**：`DEPLOY_HOST`、`DEPLOY_USER`、`DEPLOY_PASSWORD`
 
 查询进度：`gh run watch` 或打开 Actions 页面
 
