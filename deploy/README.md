@@ -12,10 +12,17 @@
 
 ## 部署步骤
 
-使用 Claude skill 部署：项目中已配置 `.claude/skills/deploy/`，对话时说「按 deploy skill 部署」即可按流程执行。
+### 方式一：GitHub Actions（推荐）
 
-### 手动部署
+推送 main 或手动触发 workflow **Build & Deploy**：
 
-1. 本地构建：`cd web && bun install && bun run build && cd ..` 后 `go build -o new-api`
-2. 部署：`scp new-api root@47.237.158.148:/root/new-api/`，再 SSH 执行 `chmod +x new-api && systemctl restart new-api`
-3. Systemd 配置见 `deploy/new-api.service`，已含生产环境变量
+- **1️⃣ 构建** → **2️⃣ 部署**，分步执行可查看进度
+- 构建成功后才自动部署
+
+**首次需配置 Secrets**：`DEPLOY_HOST`、`DEPLOY_USER`、`DEPLOY_PASSWORD`（见 `.github/workflows/build-and-deploy.yml`）
+
+查询进度：`gh run watch` 或打开 Actions 页面
+
+### 方式二：Claude skill / 本地
+
+项目内有 `.claude/skills/deploy/`，对话时说「按 deploy skill 部署」即可。或按 skill 内命令手动执行。

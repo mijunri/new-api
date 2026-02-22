@@ -1,0 +1,95 @@
+# 构建 + 部署：分步执行，可查看进度，构建完成后自动部署
+# 需在 GitHub 仓库 Settings → Secrets 配置：
+#   DEPLOY_HOST=47.237.158.148
+#   DEPLOY_USER=root
+#   DEPLOY_PASSWORD=foxrouter@1234
+# 若使用 SSH 私钥可配置 DEPLOY_SSH_KEY 替代密码
+
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 1️⃣ 构建
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 版本号
+        id: version
+        run: |
+          VERSION="main-$(date +'%Y%m%d')-${GITHUB_SHA::7}"
+          echo "$VERSION" > VERSION
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "📦 Version: $VERSION"
+
+      - name: 构建前端
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: |
+          cd web
+          bun install
+          DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=${{ steps.version.outputs.value }} bun run build
+          cd ..
+
+      - name: 构建后端
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.22'
+      - run: |
+          go mod download
+          go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=${{ steps.version.outputs.value }}'" -o new-api
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-api-binary
+          path: new-api
+
+  deploy:
+    name: 2️⃣ 部署到服务器
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: new-api-binary
+
+      - name: 上传并重启服务
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          source: "new-api"
+          target: "/root/new-api/"
+          strip_components: 0
+          rm: false
+
+      - name: 重启服务
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          script: |
+            cd /root/new-api
+            chmod +x new-api
+            systemctl restart new-api
+            sleep 2
+            systemctl status new-api --no-pager || true
+            curl -sf http://localhost:3000/api/status | head -c 200 && echo "" || echo "⚠️ API 尚未就绪，请稍后检查"
