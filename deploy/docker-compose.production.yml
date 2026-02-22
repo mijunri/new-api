@@ -8,7 +8,7 @@ version: '3.4'
 services:
   new-api:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     image: new-api:main
     container_name: new-api
