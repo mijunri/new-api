@@ -30,13 +30,14 @@ jobs:
           echo "📦 Version: $VERSION"
 
       - name: 构建前端
-        uses: oven-sh/setup-bun@v2
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: '20'
       - run: |
           cd web
-          bun install
-          DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=${{ steps.version.outputs.value }} bun run build
+          npm config set registry https://registry.npmmirror.com
+          npm install --legacy-peer-deps
+          DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=${{ steps.version.outputs.value }} npm run build
           cd ..
 
       - name: 构建后端
