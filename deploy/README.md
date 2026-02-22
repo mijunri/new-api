@@ -8,36 +8,41 @@
 
 ## 服务端依赖说明
 
-**生产运行不依赖 Node.js/Bun**。Go 编译后的二进制已将前端静态资源嵌入，直接运行即可。
+**生产运行不依赖 Node.js/Bun/Docker**。Go 编译后的二进制已将前端静态资源嵌入，直接运行即可。
 
-构建阶段才需要 Node/Bun（用于 `web/` 的 vite build），可选方式：
-1. **Docker 构建**：Dockerfile 内自动完成前端构建，服务器只需 Docker
-2. **预构建二进制**：在 CI 或本地构建后上传到服务器
+构建由 **GitHub Actions** 完成，推送 main 分支或手动触发工作流即可生成 Linux amd64 二进制。
 
-## 部署步骤（二进制方式）
+## 部署步骤（推荐：GitHub Actions 构建 + 二进制运行）
+
+### 1. 获取构建产物
+
+- 推送代码到 main 分支后，前往 **GitHub → Actions → "Build Main (Linux amd64)"**
+- 打开最新的成功运行，在 **Artifacts** 中下载 `new-api-linux-amd64`
+- 解压得到 `new-api` 可执行文件
+
+或使用 GitHub API 下载最新构建（需 token）：
 
 ```bash
-# 1. 拉取 main 分支
-cd /root/new-api
-git fetch origin
-git checkout main
-git pull origin main
-
-# 2. 构建（需安装 Go + Bun，或使用 Docker 构建）
-# 方式 A: Docker 构建
-docker build -t new-api:main .
-docker run -d --rm -p 3000:3000 -v $(pwd)/data:/data --env-file .env new-api:main
-
-# 方式 B: 本地构建
-cd web && bun install && bun run build && cd ..
-go build -ldflags "-s -w" -o new-api
-
-# 3. 更新 systemd 配置
-sudo cp deploy/new-api.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl restart new-api
+# 获取最新 workflow run 的 artifact 下载 URL
+# 可在 Actions 页面手动下载
 ```
 
-## 部署步骤（Docker Compose）
+### 2. 部署到服务器
 
-若使用 Docker，需将 `deploy/env.production.example` 复制为 `.env`，并修改 `docker-compose.yml` 中的 `environment` 使用外部 MySQL/Redis 地址。
+```bash
+# 上传二进制到服务器
+scp new-api root@47.237.158.148:/root/new-api/
+
+# SSH 到服务器
+ssh root@47.237.158.148
+
+# 停止旧服务，替换二进制，启动
+cd /root/new-api
+systemctl stop new-api
+chmod +x new-api
+systemctl start new-api
+```
+
+### 3. Systemd 配置
+
+确保 `/etc/systemd/system/new-api.service` 使用 `deploy/new-api.service` 中的配置（已包含生产环境变量）。
