@@ -1,0 +1,37 @@
+# Main 分支生产部署 - 使用外部 MySQL/Redis
+# 从 test 分支迁移的环境变量
+#
+# 使用: docker compose -f deploy/docker-compose.production.yml up -d --build
+
+version: '3.4'
+
+services:
+  new-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: new-api:main
+    container_name: new-api
+    restart: always
+    command: --port 3000 --log-dir /app/logs
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - ./logs:/app/logs
+    environment:
+      - GIN_MODE=release
+      - PORT=3000
+      - SQL_DSN=bitmodel:bitmodel@1234@tcp(rm-t4n395l1o71a3h36vzo.mysql.singapore.rds.aliyuncs.com:3306)/newapi?charset=utf8mb4&parseTime=True&loc=Local
+      - REDIS_CONN_STRING=redis://r-t4nzgbwxsrchto5plw.redis.singapore.rds.aliyuncs.com:6379
+      - REDIS_KEY_PREFIX=newapi_main
+      - SESSION_SECRET=4fdc9097c23c90b8b5293ac48ffe3c166827894a82bc5b0d624ae0d91ff58d5b
+      - SESSION_DOMAIN=.foxrouter.com
+      - TZ=Asia/Shanghai
+      - ERROR_LOG_ENABLED=true
+      - BATCH_UPDATE_ENABLED=true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
