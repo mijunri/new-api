@@ -1,0 +1,34 @@
+# New-API Systemd 服务配置 (Main 分支)
+# 从 test 分支迁移的环境变量
+#
+# 安装: sudo cp deploy/new-api.service /etc/systemd/system/
+#       sudo systemctl daemon-reload
+#       sudo systemctl enable new-api
+#       sudo systemctl start new-api
+#       sudo systemctl status new-api
+
+[Unit]
+Description=New API Service (Main Branch)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/new-api
+ExecStart=/root/new-api/new-api --port 3000 --log-dir /root/new-api/logs
+Restart=always
+RestartSec=5
+
+# 生产环境变量 (从 test 分支迁移)
+Environment=GIN_MODE=release
+Environment=PORT=3000
+Environment=SQL_DSN=bitmodel:bitmodel@1234@tcp(rm-t4n395l1o71a3h36vzo.mysql.singapore.rds.aliyuncs.com:3306)/newapi?charset=utf8mb4&parseTime=True&loc=Local
+Environment=REDIS_CONN_STRING=redis://r-t4nzgbwxsrchto5plw.redis.singapore.rds.aliyuncs.com:6379
+Environment=REDIS_KEY_PREFIX=newapi_main
+Environment=SESSION_SECRET=4fdc9097c23c90b8b5293ac48ffe3c166827894a82bc5b0d624ae0d91ff58d5b
+Environment=SESSION_DOMAIN=.foxrouter.com
+Environment=ERROR_LOG_ENABLED=true
+Environment=BATCH_UPDATE_ENABLED=true
+
+[Install]
+WantedBy=multi-user.target
