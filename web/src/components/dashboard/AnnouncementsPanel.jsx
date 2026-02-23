@@ -38,10 +38,15 @@ const AnnouncementsPanel = ({
     <Card
       {...CARD_PROPS}
       className='shadow-sm !rounded-2xl lg:col-span-2'
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(217, 167, 117, 0.2)',
+      }}
       title={
         <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 w-full'>
           <div className='flex items-center gap-2'>
-            <Bell size={16} />
+            <Bell size={16} style={{ color: '#D9A775' }} />
             {t('系统公告')}
             <Tag color='white' shape='circle'>
               {t('显示最新20条')}

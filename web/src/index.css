@@ -875,3 +875,199 @@ html.dark .with-pastel-balls::before {
 .semi-datepicker-range-input {
   border-radius: 10px !important;
 }
+
+/* ==================== Claude 风格主题 ==================== */
+:root {
+  /* Claude 风格颜色变量 */
+  --clay-terracotta: #CC7A5F;
+  --clay-warm-sand: #E8D5C4;
+  --clay-cream: #F5EDE0;
+  --clay-gold: #D9A775;
+  --clay-brown: #A67B5B;
+  --clay-dark-brown: #8B5E3C;
+  --clay-soft-peach: #FDF6F0;
+  --clay-muted: #C4B5A0;
+  --clay-text: #5C4B3F;
+  --clay-text-light: #8B7355;
+}
+
+/* Claude 风格首页背景 */
+.claude-home-bg {
+  background: linear-gradient(135deg, var(--clay-cream) 0%, var(--clay-soft-peach) 50%, var(--clay-warm-sand) 100%);
+  position: relative;
+}
+
+.claude-home-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(217, 167, 117, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(204, 122, 95, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(232, 213, 196, 0.2) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Claude 风格控制台背景 */
+.claude-dashboard-bg {
+  background: var(--clay-soft-peach);
+  min-height: 100vh;
+}
+
+/* Claude 风格卡片 */
+.claude-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(217, 167, 117, 0.2);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 20px rgba(166, 123, 91, 0.08),
+    0 1px 3px rgba(166, 123, 91, 0.05);
+  transition: all 0.3s ease;
+}
+
+.claude-card:hover {
+  box-shadow:
+    0 8px 30px rgba(166, 123, 91, 0.12),
+    0 2px 6px rgba(166, 123, 91, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Claude 风格主按钮 */
+.claude-btn-primary {
+  background: linear-gradient(135deg, var(--clay-terracotta) 0%, var(--clay-gold) 100%);
+  color: white !important;
+  border: none;
+  box-shadow: 0 4px 15px rgba(204, 122, 95, 0.3);
+  transition: all 0.3s ease;
+}
+
+.claude-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(204, 122, 95, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Claude 风格次要按钮 */
+.claude-btn-secondary {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--clay-text);
+  border: 1px solid rgba(217, 167, 117, 0.3);
+  backdrop-filter: blur(5px);
+}
+
+/* Claude 风格输入框 */
+.claude-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(217, 167, 117, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.claude-input:focus {
+  border-color: var(--clay-gold);
+  box-shadow: 0 0 0 3px rgba(217, 167, 117, 0.15);
+}
+
+/* Claude 风格标题 */
+.claude-title {
+  color: var(--clay-text);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Claude 风格副标题 */
+.claude-subtitle {
+  color: var(--clay-text-light);
+  font-weight: 400;
+}
+
+/* Claude 风格渐变文字 */
+.claude-gradient-text {
+  background: linear-gradient(135deg, var(--clay-terracotta) 0%, var(--clay-gold) 50%, var(--clay-brown) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Claude 风格模糊球 */
+.claude-blur-ball {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.claude-blur-ball-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--clay-gold) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+}
+
+.claude-blur-ball-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--clay-terracotta) 0%, transparent 70%);
+  bottom: -50px;
+  left: -80px;
+}
+
+.claude-blur-ball-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--clay-warm-sand) 0%, transparent 70%);
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.3;
+}
+
+/* Claude 风格统计卡片 */
+.claude-stats-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(217, 167, 117, 0.15);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 15px rgba(166, 123, 91, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Claude 风格欢迎区域 */
+.claude-welcome-bg {
+  background: linear-gradient(135deg,
+    rgba(217, 167, 117, 0.1) 0%,
+    rgba(232, 213, 196, 0.15) 50%,
+    rgba(204, 122, 95, 0.08) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(217, 167, 117, 0.2);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+/* 暗色模式适配 */
+html.dark .claude-card {
+  background: rgba(40, 35, 30, 0.9);
+  border-color: rgba(217, 167, 117, 0.3);
+}
+
+html.dark .claude-dashboard-bg {
+  background: #1A1612;
+}
+
+html.dark .claude-stats-card {
+  background: linear-gradient(135deg,
+    rgba(60, 50, 40, 0.9) 0%,
+    rgba(50, 40, 35, 0.8) 100%);
+  border-color: rgba(217, 167, 117, 0.25);
+}
+
+html.dark .claude-title {
+  color: var(--clay-gold);
+}
+
+html.dark .claude-subtitle {
+  color: var(--clay-muted);
+}

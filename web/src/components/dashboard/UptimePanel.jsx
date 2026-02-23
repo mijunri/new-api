@@ -50,10 +50,15 @@ const UptimePanel = ({
     <Card
       {...CARD_PROPS}
       className='shadow-sm !rounded-2xl lg:col-span-1'
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(217, 167, 117, 0.2)',
+      }}
       title={
         <div className='flex items-center justify-between w-full gap-2'>
           <div className='flex items-center gap-2'>
-            <Gauge size={16} />
+            <Gauge size={16} style={{ color: '#D9A775' }} />
             {t('服务可用性')}
           </div>
           <Button
@@ -63,7 +68,10 @@ const UptimePanel = ({
             size='small'
             theme='borderless'
             type='tertiary'
-            className='text-gray-500 hover:text-blue-500 hover:bg-blue-50 !rounded-full'
+            style={{
+              color: '#D9A775',
+              borderRadius: '12px',
+            }}
           />
         </div>
       }
@@ -131,7 +139,12 @@ const UptimePanel = ({
 
       {/* 图例 */}
       {uptimeData.length > 0 && (
-        <div className='p-3 bg-gray-50 rounded-b-2xl'>
+        <div
+          className='p-3 rounded-b-2xl'
+          style={{
+            background: 'linear-gradient(135deg, rgba(245, 237, 224, 0.5) 0%, rgba(232, 213, 196, 0.3) 100%)',
+          }}
+        >
           <div className='flex flex-wrap gap-3 text-xs justify-center'>
             {uptimeLegendData.map((legend, index) => (
               <div key={index} className='flex items-center gap-1'>

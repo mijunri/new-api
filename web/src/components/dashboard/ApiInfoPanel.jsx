@@ -38,10 +38,15 @@ const ApiInfoPanel = ({
   return (
     <Card
       {...CARD_PROPS}
-      className='bg-gray-50 border-0 !rounded-2xl'
+      className='border-0 !rounded-2xl'
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(217, 167, 117, 0.2)',
+      }}
       title={
         <div className={FLEX_CENTER_GAP2}>
-          <Server size={16} />
+          <Server size={16} style={{ color: '#D9A775' }} />
           {t('API信息')}
         </div>
       }

@@ -39,10 +39,15 @@ const ChartsPanel = ({
     <Card
       {...CARD_PROPS}
       className={`!rounded-2xl ${hasApiInfoPanel ? 'lg:col-span-3' : ''}`}
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(217, 167, 117, 0.2)',
+      }}
       title={
         <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between w-full gap-3'>
           <div className={FLEX_CENTER_GAP2}>
-            <PieChart size={16} />
+            <PieChart size={16} style={{ color: '#D9A775' }} />
             {t('模型数据分析')}
           </div>
           <Tabs

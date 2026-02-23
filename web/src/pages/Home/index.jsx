@@ -157,25 +157,26 @@ const Home = () => {
       />
       {homePageContentLoaded && homePageContent === '' ? (
         <div className='w-full overflow-x-hidden'>
-          {/* Banner 部分 */}
-          <div className='w-full border-b border-semi-color-border min-h-[500px] md:min-h-[600px] lg:min-h-[700px] relative overflow-x-hidden'>
-            {/* 背景模糊晕染球 */}
-            <div className='blur-ball blur-ball-indigo' />
-            <div className='blur-ball blur-ball-teal' />
-            <div className='flex items-center justify-center h-full px-4 py-20 md:py-24 lg:py-32 mt-10'>
+          {/* Banner 部分 - Claude 风格 */}
+          <div className='w-full claude-home-bg min-h-[500px] md:min-h-[600px] lg:min-h-[700px] relative overflow-x-hidden'>
+            {/* Claude 风格背景模糊球 */}
+            <div className='claude-blur-ball claude-blur-ball-1' />
+            <div className='claude-blur-ball claude-blur-ball-2' />
+            <div className='claude-blur-ball claude-blur-ball-3' />
+            <div className='flex items-center justify-center h-full px-4 py-20 md:py-24 lg:py-32 mt-10 relative z-10'>
               {/* 居中内容区 */}
               <div className='flex flex-col items-center justify-center text-center max-w-4xl mx-auto'>
                 <div className='flex flex-col items-center justify-center mb-6 md:mb-8'>
                   <h1
-                    className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-semi-color-text-0 leading-tight ${isChinese ? 'tracking-wide md:tracking-wider' : ''}`}
+                    className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold claude-title leading-tight ${isChinese ? 'tracking-wide md:tracking-wider' : ''}`}
                   >
                     <>
                       {t('统一的')}
                       <br />
-                      <span className='shine-text'>{t('大模型接口网关')}</span>
+                      <span className='claude-gradient-text'>{t('大模型接口网关')}</span>
                     </>
                   </h1>
-                  <p className='text-base md:text-lg lg:text-xl text-semi-color-text-1 mt-4 md:mt-6 max-w-xl'>
+                  <p className='text-base md:text-lg lg:text-xl claude-subtitle mt-4 md:mt-6 max-w-xl'>
                     {t('更好的价格，更好的稳定性，只需要将模型基址替换为：')}
                   </p>
                   {/* BASE URL 与端点选择 */}
@@ -183,8 +184,9 @@ const Home = () => {
                     <Input
                       readonly
                       value={serverAddress}
-                      className='flex-1 !rounded-full'
+                      className='flex-1 claude-input'
                       size={isMobile ? 'default' : 'large'}
+                      style={{ borderRadius: '16px' }}
                       suffix={
                         <div className='flex items-center gap-2'>
                           <ScrollList
@@ -203,7 +205,8 @@ const Home = () => {
                             type='primary'
                             onClick={handleCopyBaseURL}
                             icon={<IconCopy />}
-                            className='!rounded-full'
+                            className='claude-btn-primary'
+                            style={{ borderRadius: '12px' }}
                           />
                         </div>
                       }
@@ -218,7 +221,8 @@ const Home = () => {
                       theme='solid'
                       type='primary'
                       size={isMobile ? 'default' : 'large'}
-                      className='!rounded-3xl px-8 py-2'
+                      className='claude-btn-primary'
+                      style={{ borderRadius: '16px', padding: '0 32px' }}
                       icon={<IconPlay />}
                     >
                       {t('获取密钥')}
@@ -227,7 +231,8 @@ const Home = () => {
                   {isDemoSiteMode && statusState?.status?.version ? (
                     <Button
                       size={isMobile ? 'default' : 'large'}
-                      className='flex items-center !rounded-3xl px-6 py-2'
+                      className='flex items-center claude-btn-secondary'
+                      style={{ borderRadius: '16px', padding: '0 24px' }}
                       icon={<IconGithubLogo />}
                       onClick={() =>
                         window.open(
@@ -242,7 +247,8 @@ const Home = () => {
                     docsLink && (
                       <Button
                         size={isMobile ? 'default' : 'large'}
-                        className='flex items-center !rounded-3xl px-6 py-2'
+                        className='flex items-center claude-btn-secondary'
+                        style={{ borderRadius: '16px', padding: '0 24px' }}
                         icon={<IconFile />}
                         onClick={() => window.open(docsLink, '_blank')}
                       >
@@ -257,7 +263,7 @@ const Home = () => {
                   <div className='flex items-center mb-6 md:mb-8 justify-center'>
                     <Text
                       type='tertiary'
-                      className='text-lg md:text-xl lg:text-2xl font-light'
+                      className='text-lg md:text-xl lg:text-2xl font-light claude-subtitle'
                     >
                       {t('支持众多的大模型供应商')}
                     </Text>
@@ -324,7 +330,7 @@ const Home = () => {
                       <Xinference.Color size={40} />
                     </div>
                     <div className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center'>
-                      <Typography.Text className='!text-lg sm:!text-xl md:!text-2xl lg:!text-3xl font-bold'>
+                      <Typography.Text className='!text-lg sm:!text-xl md:!text-2xl lg:!text-3xl font-bold claude-gradient-text'>
                         30+
                       </Typography.Text>
                     </div>

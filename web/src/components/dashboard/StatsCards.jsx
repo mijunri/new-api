@@ -33,14 +33,19 @@ const StatsCards = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (
-    <div className='mb-4'>
+    <div className='mb-4 px-2'>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {groupedStatsData.map((group, idx) => (
           <Card
             key={idx}
             {...CARD_PROPS}
-            className={`${group.color} border-0 !rounded-2xl w-full`}
+            className={`claude-stats-card border-0 !rounded-2xl w-full`}
             title={group.title}
+            style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(217, 167, 117, 0.2)',
+            }}
           >
             <div className='space-y-4'>
               {group.items.map((item, itemIdx) => (
