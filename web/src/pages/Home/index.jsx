@@ -236,7 +236,7 @@ const Home = () => {
                       icon={<IconGithubLogo />}
                       onClick={() =>
                         window.open(
-                          'https://github.com/QuantumNous/new-api',
+                          'https://github.com/mijunri/new-api',
                           '_blank',
                         )
                       }
