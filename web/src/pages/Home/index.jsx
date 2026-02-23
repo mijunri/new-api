@@ -236,7 +236,7 @@ const Home = () => {
                       icon={<IconGithubLogo />}
                       onClick={() =>
                         window.open(
-                          'https://github.com/mijunri/new-api',
+                          'https://github.com/FoxRouterTeam/new-api',
                           '_blank',
                         )
                       }

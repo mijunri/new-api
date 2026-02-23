@@ -64,16 +64,16 @@ const About = () => {
       <p>{t('可在设置页面设置关于内容，支持 HTML & Markdown')}</p>
       {t('FoxRouter项目仓库地址：')}
       <a
-        href='https://github.com/mijunri/new-api'
+        href='https://github.com/FoxRouterTeam/new-api'
         target='_blank'
         rel='noopener noreferrer'
         className='!text-semi-color-primary'
       >
-        https://github.com/mijunri/new-api
+        https://github.com/FoxRouterTeam/new-api
       </a>
       <p>
         <a
-          href='https://github.com/mijunri/new-api'
+          href='https://github.com/FoxRouterTeam/new-api'
           target='_blank'
           rel='noopener noreferrer'
           className='!text-semi-color-primary'
@@ -82,12 +82,12 @@ const About = () => {
         </a>{' '}
         {t('© {{currentYear}}', { currentYear })}{' '}
         <a
-          href='https://github.com/mijunri'
+          href='https://github.com/FoxRouterTeam/new-api'
           target='_blank'
           rel='noopener noreferrer'
           className='!text-semi-color-primary'
         >
-          mijunri
+          FoxRouter Team
         </a>{' '}
         {t('| 基于')}{' '}
         <a
