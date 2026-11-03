@@ -1,0 +1,9 @@
+name: t2 main
+on:
+  push:
+    branches: [main]
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi-main
