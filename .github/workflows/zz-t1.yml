@@ -1,0 +1,9 @@
+name: t1 plain
+on:
+  push:
+    branches: [zz-t1]
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello && uname -a
